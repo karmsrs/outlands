@@ -1,0 +1,151 @@
+////////////////////////////////////////////////////////////////////////////////
+// AFK MAGERY SCRIPT
+// written by karms
+// last modified 22/12/2021
+
+// REQUIREMENTS
+// Magery < 60
+//    - Lightning
+//        - Mandrake Root
+//        - Sulfurous Ash
+//    - Greater Heal
+//        - Garlic
+//        - Ginseng
+//        - Mandrake Root
+//        - Spider's Silk
+// 60 <= Magery < 70
+//    - Invisibility
+//        - Blood Moss
+//        - Nightshade
+// 70 <= Magery < 75
+//    - Invisibility
+//        - Blood Moss
+//        - Nightshade
+// 75 <= Magery < 85
+//    - Flamestrike
+//        - Spider's Silk
+//        - Sulfurous Ash
+// 85 <= Magery < 100
+//    - Water Elemental
+//        - Blood Moss
+//        - Mandrake Root
+//        - Spider's Silk
+
+// SETUP
+// If you want to AFK starting at 70 skill
+//    - Uncomment line 88 and comment line 89
+////////////////////////////////////////////////////////////////////////////////
+
+while skill 'Magery' < 70
+    if skill 'Magery' < 60
+        if mana < 20
+            while diffmana > 0
+                if not findbuff "actively meditating"
+                    hotkey 'Meditation'
+                    wait 11000
+                endif
+            endwhile
+        elseif hp < 50
+            if count "Garlic" > 0 and count "Ginseng" > 0 and count "Mandrake Root" > 0 and count "Spider's Silk" > 0
+                hotkey "Greater Heal"
+                wft
+                target 'self'
+            else
+                sysmsg "Out of regs (GHEAL)" 34
+                break
+            endif
+        elseif hp > 25
+            if count "Mandrake Root" > 0 and count "Sulfurous Ash" > 0
+                hotkey "lightning"
+                wft
+                target 'self'
+                wait 500
+            else
+                sysmsg "Out of regs (LIGHTNING)" 34
+                break
+            endif
+        endif
+    else
+        if mana < 30
+            while diffmana > 0
+                if not findbuff "actively meditating"
+                    hotkey 'Meditation'
+                    wait 11000
+                endif
+            endwhile
+        elseif count "Blood Moss" > 0 and count "Nightshade" > 0
+            hotkey 'Invisibility'
+            wft
+            target 'self'
+            wait 500
+        else
+            sysmsg "Out of regs (INVIS)" 34
+            break
+        endif 
+    endif
+endwhile
+
+// if skill "Magery" >= 70 and skill "Magery" < 85
+if skill "Magery" >= 75 and skill "Magery" < 85
+    if not varexist "fstarget"
+        overhead "SELECT FS TARGET" 34
+        @setvar! "fstarget"
+    endif
+endif
+
+while skill "Magery" < 100
+    if skill "Magery" < 75
+        if mana < 20
+            while diffmana > 0
+                if not findbuff "actively meditating"
+                    hotkey "Meditation"
+                    wait 11000
+                endif
+            endwhile
+        elseif count "Blood Moss" > 0 and count "Nightshade" > 0
+            hotkey "Invisibility"
+            wft
+            target "self"
+            wait 500
+        else
+            sysmsg "Out of regs (INVIS)" 34
+            break
+        endif
+    elseif skill "Magery" < 85
+        if mana < 40
+            while diffmana > 0
+                if not findbuff "actively meditating"
+                    hotkey "Meditation"
+                    wait 11000
+                endif
+            endwhile
+        elseif count "Spider's Silk" > 0 and count "Sulfurous Ash" > 0
+            hotkey "Flamestrike"
+            wft
+            target "fstarget"
+            wait 500
+        else
+            sysmsg "Out of regs (FS)" 34
+            break
+        endif
+    else
+        if findtype "a water elemental" true
+            say "a water elemental release"
+            wait 200
+        endif
+        if mana < 50
+            while diffmana > 0
+                if not findbuff "actively meditating"
+                    hotkey "Meditation"
+                    wait 11000
+                endif
+            endwhile
+        elseif count "Blood Moss" > 0 and count "Mandrake Root" > 0 and count "Spider's Silk" > 0
+            hotkey "Water Elemental"
+            wait 5500
+        else
+            sysmsg "Out of regs (SWE)" 34
+            break
+        endif
+    endif
+endwhile

@@ -1,0 +1,23 @@
+if not timerexists "aids"
+    createtimer "aids"
+    settimer "aids" 11000
+endif
+
+while not dead
+    if findtype "clean bandage%s%" backpack
+        if diffhits >= 10
+            if timer "aids" >= 11000
+                dclicktype "clean bandage%s%" backpack
+                waitfortarget
+                target 'self'
+                wait 200
+                if insysmsg "begin applying"
+                    settimer "aids" 0
+                endif
+            endif
+        endif
+    else
+        overhead "No aids!" 34
+    endif
+    wait 1000
+endwhile

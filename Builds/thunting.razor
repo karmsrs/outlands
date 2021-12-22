@@ -1,0 +1,130 @@
+// combines picking/trap removal  and hiding/stealth scripts into one
+
+@setvar! "havepicks" 1
+@setvar! "havedrills" 1
+
+// required for hiding/stealth
+if not timerexists "hide"
+    createtimer "hide"
+    settimer "hide" 11000
+endif
+
+if not listexists "pick_training"
+    createlist "pick_training"
+else
+    clearlist "pick_training"
+endif
+pushlist "pick_training" "pick"
+pushlist "pick_training" "trap"
+
+// combo loop with all skills
+sysmsg "Beginning T-Hunting loop..." 88
+while skill "Lockpicking" < 100 or skill "Remove Trap" < 100 or skill "Hiding" < 100 or skill "Stealth" < 100
+    if findtype "strong box" backpack as "foundbox"
+        foreach train_skill in "pick_training"
+            if skill "Hiding" < 100 or skill "Stealth" < 100
+                if timer "hide" >= 11000
+                    if skill "Hiding" < 80
+                        useskill "Hiding"
+                    else
+                        if hidden and skill "Stealth" < 100
+                            useskill "Stealth"
+                        else
+                            useskill "Hiding"
+                        endif
+                    endif
+                    settimer "hide" 0
+                endif
+            endif
+
+            if gumpexists 736038070
+                gumpclose 736038070
+            endif
+            dclick "foundbox"
+            waitforgump 736038070
+
+            if train_skill = "pick"
+                if skill "Lockpicking" < 100
+                    if findtype "lockpicks" backpack
+                        @setvar! "havepicks" 1
+                        gumpresponse 4 736038070
+                    else
+                        if "havepicks" = 1
+                            restock 2
+                            wft
+                            target "self"
+                            wait 2000
+                            if insysmsg "queued 0 items" or not findtype "lockpicks" backpack
+                                sysmsg "Out of lockpicks or cannot access bank!" 34
+                                @setvar! "havepicks" 0
+                            endif
+                        endif
+                    endif
+                endif
+            else
+                if skill "Remove Trap" < 100
+                    if findtype "drill" backpack
+                        @setvar! "havedrills" 1
+                        gumpresponse 7 736038070
+                    else
+                        if "havedrills" = 1
+                            restock 3
+                            wft
+                            target "self"
+                            wait 2000
+                            if insysmsg "queued 0 items" or not findtype "drill" backpack
+                                sysmsg "Out of trap removal tools or cannot access bank!" 34
+                                @setvar! "havedrills" 0
+                            endif
+                        endif
+                    endif
+                endif
+            endif
+
+            if insysmsg "world will save in 15"
+                sysmsg "Waiting for save" 88
+                wait 20000
+            else
+                wait 4000
+            endif
+        endfor
+
+        if "havepicks" = 0 and "havedrills" = 0
+            sysmsg "Out of lock picks and trap tools!" 34
+            break
+        endif
+
+    else
+        sysmsg "No lockpicking box." 34
+        break
+    endif
+endwhile
+sysmsg "Exited T-Hunting loop, entering Stealth loop..." 88
+gumpclose 736038070
+
+// hiding/stealth loop that constantly looks for update of pick/tools amount
+// will restart main thunting loop if it finds tools and picking/trap removal is lower than 100
+while skill "Hiding" < 100 or skill "Stealth" < 100
+    if findtype "lockpicks" backpack and findtype "strong box" backpack and skill "Lockpicking" < 100
+        sysmsg "Lockpicks found in bag, re-starting T-Hunting loop"
+        script "thunting"
+    elseif findtype "drill" backpack and findtype "strong box" backpack and skill "Remove Trap" < 100
+        sysmsg "Trap tools found in bag, re-starting T-Hunting loop"
+        script "thunting"
+    endif
+
+    if timer "hide" >= 11000
+        if skill "Hiding" < 80
+            useskill "Hiding"
+        else
+            if hidden and skill "Stealth" < 100
+                useskill "Stealth"
+            else
+                useskill "Hiding"
+            endif
+        endif
+        settimer "hide" 0
+    endif
+endwhile
+
+sysmsg "Skill cap reached!" 88

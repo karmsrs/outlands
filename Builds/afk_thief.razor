@@ -1,0 +1,97 @@
+// AFK THIEF SCRIPT
+// written by karms
+// last modified 22/12/2021
+
+// Requirements:
+//  - (for snooping) alt character with a bag of some kind inside their backpack
+//  - (for stealing) pack animal belonging to thief
+//  - (for stealing) 10 dye tubs
+
+// Setup:
+// 1) Configure Organizer 20 in Razor
+//    - Agents > Select Organizer 20 on dropdown list
+//    - Add (Target)..., target a Dye Tub
+//    - Set Hot Bag, target the Pack Animal
+// 2) Put 9/10 of the Dye Tubs in your pack
+// 3) Change line 24 to match your current weight with 9 Dye Tubs in your pack
+// 4) Put all Dye Tubs on the pack animal
+// 5) Snoop the backpack of alt character so you can target the bag
+// 6) Start script and follow the overhead prompts
+//    - TARGET BAG FOR SNOOPING (target a bag inside alt's backpack)
+//    - TARGET PACK ANIMAL FOR STEALING (target the pack animal)
+
+// SET THIS TO YOUR WEIGHT WITH 9/10 OF THE DYE TUBS IN YOUR BAG
+@setvar! "packweight" 136
+
+// set target for snooping (pick a bag inside alt's backpack)
+if skill "Snooping" < 100
+    overhead "TARGET BAG FOR SNOOPING"
+    @setvar! "snooptgt"
+endif
+
+// set target for stealing (pick the pack animal itself)
+if skill "Stealing" < 100
+    overhead "TARGET PACK ANIMAL FOR STEALING"
+    @setvar! "stealtgt"
+endif
+
+// level snooping to 80 first
+if skill "Snooping" < 80
+    while skill "Snooping" < 100
+        dclick "snooptgt"
+        wait 2000
+    endwhile
+endif
+
+// hiding and stealth
+if skill "Hiding" < 100 or skill "Stealth" < 100
+    if not timerexists "hide"
+        createtimer "hide"
+        settimer "hide" 11000
+    endif
+
+    while skill "Hiding" < 100 or skill "Stealth" < 100
+        if timer "hide" >= 11000
+            if skill "Hiding" < 80
+                useskill "Hiding"
+            else
+                if hidden and skill "Stealth" < 100
+                    useskill "Stealth"
+                else
+                    useskill "Hiding"
+                endif
+            endif
+            settimer "hide" 0
+        endif
+    endwhile
+endif
+
+// stealing
+if skill "Stealing" < 100
+    if not timerexists "steal"
+        createtimer "steal"
+        settimer "steal" 11000
+    endif
+
+    while skill "Stealing" < 100 or skill "Snooping" < 100
+        if weight >= "packweight"
+            sysmsg "Moving back to pack animal."
+            wait 33000
+            organizer 20
+            wait 5000
+        endif
+
+        if skill "Snooping" < 100
+            dclick "snooptgt"
+            wait 2000
+        endif
+
+        if timer "steal" >= 11000 and skill "Stealing" < 100
+            useskill "Stealing"
+            wft
+            target "stealtgt"
+            settimer "steal" 0
+            wait 2000
+        endif
+    endwhile
+endif

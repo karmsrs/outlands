@@ -1,0 +1,13 @@
+while skill "Item Identification" < 100
+    if findtype "dagger" backpack as "mydagger"
+        useskill "ItemId"
+        wft
+        target "mydagger"
+        wait 2000
+    else
+        overhead "No Dagger!" 34
+        break
+    endif
+endwhile
+
+    

@@ -1,0 +1,12 @@
+if not timerexists "hide"
+    createtimer "hide"
+    settimer "hide" 11000
+endif
+
+
+while skill "Hiding" < 70
+    if timer "hide" >= 11000
+        useskill "Hiding"
+        settimer "hide" 0
+    endif
+endwhile
