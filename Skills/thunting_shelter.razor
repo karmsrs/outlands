@@ -1,0 +1,40 @@
+if not timerexists "hide"
+    createtimer "hide"
+    settimer "hide" 11000
+endif
+
+while skill "Lockpicking" < 70 or skill "Remove Trap" < 70 or skill "Hiding" < 70
+    if skill "Hiding" < 70 and timer "hide" >= 11000
+        useskill "Hiding"
+        settimer "hide" 0
+    endif
+
+    if skill "Lockpicking" < 70 and findtype "lockpicks" backpack and findtype "strong box" backpack as "foundbox"
+        if gumpexists 736038070
+            gumpclose 736038070
+        endif
+        dclick "foundbox"
+        waitforgump 736038070
+        gumpresponse 4 736038070
+        wait 4000
+    endif
+
+    if skill "Hiding" < 70 and timer "hide" >= 11000
+        useskill "Hiding"
+        settimer "hide" 0
+    endif
+
+    if skill "Remove Trap" < 70 and findtype "drill" backpack and findtype "strong box" backpack as "foundbox"
+        if gumpexists 736038070
+            gumpclose 736038070
+        endif
+        dclick "foundbox"
+        waitforgump 736038070
+        gumpresponse 7 736038070
+        wait 4000
+    endif
+endwhile
+
+if gumpexists 736038070
+    gumpclose 736038070
+endif
