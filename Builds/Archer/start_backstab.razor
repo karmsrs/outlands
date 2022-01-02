@@ -1,0 +1,66 @@
+clearsysmsg
+overhead "Disabling AUTOSTEALTH" 38
+while 1 = 1
+    say [AutoStealth
+    wait 500
+    if insysmsg "disabled"
+        break
+    endif
+endwhile
+
+if not timerexists "backstabtimer"
+    createtimer "backstabtimer"
+endif
+
+if listexists "backstablist"
+    removelist "backstablist"
+endif
+createlist "backstablist"
+pushlist "backstablist" 1000 "back"
+pushlist "backstablist" 2000 "back"
+pushlist "backstablist" 3000 "back"
+pushlist "backstablist" 4000 "back"
+pushlist "backstablist" 5000 "back"
+pushlist "backstablist" 6000 "back"
+pushlist "backstablist" 7000 "back"
+pushlist "backstablist" 8000 "back"
+pushlist "backstablist" 9000 "back"
+pushlist "backstablist" 10000 "back"
+
+overhead "Entering BACKSTAB Mode" 73
+
+while 1 = 1
+    if insysmsg "You feel comfortable enough to begin stealthing"
+        wait 200
+        useskill "stealth"
+    elseif insysmsg "You feel ready to continue stealthing"
+        overhead "BACKSTAB READY" 73
+    elseif insysmsg "You begin to move quietly"
+        settimer "backstabtimer" 0
+        foreach tic in "backstablist"
+            while timer "backstabtimer" < tic
+            endwhile
+            if tic = 1000
+                overhead "10" 38
+            elseif tic = 2000
+                overhead "9" 38
+            elseif tic = 3000
+                overhead "8" 38
+            elseif tic = 4000
+                overhead "7" 38
+            elseif tic = 5000
+                overhead "6" 38
+            elseif tic = 6000
+                overhead "5" 38
+            elseif tic = 7000
+                overhead "4" 48
+            elseif tic = 8000
+                overhead "3" 48
+            elseif tic = 9000
+                overhead "2" 53
+            elseif tic = 10000
+                overhead "1" 53
+            endif
+        endfor
+    endif
+endwhile

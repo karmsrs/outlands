@@ -1,0 +1,17 @@
+overhead "Exiting BACKSTAB Mode" 38
+if not timerexists "backstabtimer"
+    removetimer "backstabtimer"
+endif
+
+if listexists "backstablist"
+    removelist "backstablist"
+endif
+
+overhead "Enabling AUTOSTEALTH" 73
+while 1 = 1
+    say [AutoStealth
+    wait 500
+    if insysmsg "enabled"
+        break
+    endif
+endwhile
