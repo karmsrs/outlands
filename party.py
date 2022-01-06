@@ -15,7 +15,17 @@ class UOPartyJournal:
         else:
             self.lastJournalPath = self.curJournalPath
             self.curJournalPath = _latestPath
+            self.getCharName()
+            print(f'New log file: {self.charName} | {path.basename(self.curJournalPath)}')
             return True
+
+    def getCharName(self):
+        with open(self.curJournalPath, 'r') as rf:
+            while True:
+                line = rf.readline()
+                if 'System: Welcome ' in line:
+                    self.charName = line.split('System: Welcome ')[1][:-2]
+                    break
 
     def followFile(self, journalFile):
         try:
@@ -38,7 +48,7 @@ class UOPartyJournal:
             journalFile = open(self.curJournalPath, 'r')
             journalLines = self.followFile(journalFile)
             for line in journalLines:
-                print(line.split('  ', 1)[1], end='')
+                print(line.replace(' [Party]', ''), end='')
 
 if __name__ == '__main__':
     journal = UOPartyJournal()
